@@ -17,7 +17,7 @@ interface ProductsProps {
   error?: string;
   limit?: number;
   uniqueKey?: string;
-  variant?: string;
+  variant?: 'alpine' | 'oak';
 }
 
 const ProductsGridBlock: React.FC<ProductsProps> = ({
@@ -25,16 +25,19 @@ const ProductsGridBlock: React.FC<ProductsProps> = ({
   sectionSubHeading,
   headingPosition = 'center',
   className = 'mb-12 lg:mb-14 xl:mb-16',
-  products,
+  products = [],
   loading,
   error,
-  limit,
-  uniqueKey,
+  limit = 6,
+  uniqueKey = 'product',
   variant = 'alpine',
   lang,
 }) => {
+  // Ensure products is an array
+  const productList = Array.isArray(products) ? products : [];
+
   return (
-    <div className={`${className}`}>
+    <div className={className}>
       <SectionHeader
         sectionHeading={sectionHeading}
         sectionSubHeading={sectionSubHeading}
@@ -56,15 +59,15 @@ const ProductsGridBlock: React.FC<ProductsProps> = ({
       >
         {error ? (
           <Alert message={error} className="col-span-full" />
-        ) : loading && !products?.length ? (
-          Array.from({ length: limit! }).map((_, idx) => (
+        ) : loading && productList.length === 0 ? (
+          Array.from({ length: limit }).map((_, idx) => (
             <ProductCardLoader
               key={`${uniqueKey}-${idx}`}
               uniqueKey={`${uniqueKey}-${idx}`}
             />
           ))
         ) : (
-          products?.map((product: any) =>
+          productList.map((product: Product) =>
             variant === 'oak' ? (
               <ProductCardOak
                 key={`${uniqueKey}-${product.id}`}
